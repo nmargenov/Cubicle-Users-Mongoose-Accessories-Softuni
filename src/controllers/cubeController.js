@@ -1,4 +1,4 @@
-const { createCube, getCubeById } = require('../managers/cubeManager');
+const { createCube, getCubeById, deleteCubeById } = require('../managers/cubeManager');
 const { mustBeAuth } = require('../middlewares/authMiddleware');
 
 const router = require('express').Router();
@@ -27,16 +27,62 @@ router.post('/addCube',mustBeAuth,async(req,res)=>{
 });
 
 router.get('/:cubeId/details',async(req,res)=>{
+    const loggedUserId = req.user?._id;
     const cubeId = req.params.cubeId;
     const cube = await getCubeById(cubeId)
     ? await getCubeById(cubeId).lean()
     : false;
+
     if(!cube){
        return res.status(404).render('404');
     }
 
-    res.status(302).render('cubes/details',{cube});
+    const isCreator = loggedUserId == cube.creatorId;
+
+    res.status(302).render('cubes/details',{cube,isCreator});
 });
+
+router.get('/:cubeId/delete',mustBeAuth,async (req,res)=>{
+    const cubeId = req.params.cubeId;
+    const loggedUserId = req.user._id;
+
+    
+    const cube = await getCubeById(cubeId)
+    ? await getCubeById(cubeId).lean()
+    : false;
+    
+    if(!cube){
+        return res.status(404).render('404');
+    }
+    
+    if(loggedUserId != cube.creatorId){
+        return res.redirect('/');
+    }
+
+    res.status(302).render('cubes/delete',{cube})
+});
+
+router.post('/:cubeId/delete',mustBeAuth,async(req,res)=>{
+    const cubeId = req.params.cubeId;
+    const loggedUserId = req.user._id;
+
+    
+    const cube = await getCubeById(cubeId)
+    ? await getCubeById(cubeId).lean()
+    : false;
+    
+    if(!cube){
+        return res.status(404).render('404');
+    }
+    
+    if(loggedUserId != cube.creatorId){
+        return res.redirect('/');
+    }
+
+    await deleteCubeById(cubeId);
+    
+    res.redirect('/');
+})
 
 
 module.exports = router;

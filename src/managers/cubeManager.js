@@ -34,4 +34,8 @@ function getCubeByIdWithAccessories(cubeId){
     return Cube.findById(cubeId).populate('accessories');
 }
 
-module.exports = {getAllCubes,createCube,getCubeById,getCubeByIdWithAccessories}
+function deleteCubeById(cubeId){
+    return Cube.findByIdAndDelete(cubeId);
+}
+
+module.exports = {getAllCubes,createCube,getCubeById,getCubeByIdWithAccessories,deleteCubeById}
