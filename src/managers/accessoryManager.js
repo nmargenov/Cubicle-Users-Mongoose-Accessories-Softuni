@@ -10,4 +10,12 @@ function createAccessory(name,description,imageUrl){
     return newAccessory;
 }
 
-module.exports = {createAccessory}
+function getAllAccessories(){
+    return Accessory.find();
+}
+
+function getRemainingAccessories(accessories){
+    return Accessory.find({ _id: {$nin: accessories }});
+}
+
+module.exports = {createAccessory,getAllAccessories,getRemainingAccessories}

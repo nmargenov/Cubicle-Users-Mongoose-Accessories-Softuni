@@ -49,4 +49,12 @@ function editCubeById(cubeId,name,description,imageUrl,difficultyLevel){
     return Cube.findByIdAndUpdate(cubeId,editedCube);
 }
 
-module.exports = {getAllCubes,createCube,getCubeById,getCubeByIdWithAccessories,deleteCubeById,editCubeById}
+function attachAccessoryToCube(cubeId,accessoryId){
+    if(!mongoose.Types.ObjectId.isValid(cubeId)){
+        return false;
+    }
+    return Cube.findByIdAndUpdate(cubeId,{$push:{accessories:accessoryId}});
+}
+
+
+module.exports = {getAllCubes,createCube,getCubeById,getCubeByIdWithAccessories,deleteCubeById,editCubeById,attachAccessoryToCube}

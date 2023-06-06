@@ -1,4 +1,5 @@
-const { createCube, getCubeById, deleteCubeById, editCubeById, getCubeByIdWithAccessories } = require('../managers/cubeManager');
+const { getAllAccessories, getRemainingAccessories } = require('../managers/accessoryManager');
+const { createCube, getCubeById, deleteCubeById, editCubeById, getCubeByIdWithAccessories, attachAccessoryToCube } = require('../managers/cubeManager');
 const { mustBeAuth } = require('../middlewares/authMiddleware');
 const generateDifficultyLevelOptionsView = require('../utils/utils');
 
@@ -37,7 +38,6 @@ router.get('/:cubeId/details',async(req,res)=>{
     if(!cube){
        return res.status(404).render('404');
     }
-
     const isCreator = loggedUserId == cube.creatorId;
 
     res.status(302).render('cubes/details',{cube,isCreator});
@@ -139,5 +139,51 @@ router.post('/:cubeId/edit',mustBeAuth,async(req,res)=>{
     const editedCube = await editCubeById(cubeId,name,description,imageUrl,difficultyLevel);
     res.redirect(`/cubes/${editedCube._id}/details`);
 });
+
+router.get('/:cubeId/accessories/attach',mustBeAuth,async(req,res)=>{
+    const cubeId = req.params.cubeId;
+    const loggedUserId = req.user._id;
+
+    const cube = await getCubeById(cubeId)
+    ?await getCubeById(cubeId).lean()
+    :false;
+
+    if(!cube){
+        return res.status(404).render('404');
+    }
+    
+    if(loggedUserId != cube.creatorId){
+        return res.redirect('/');
+    }
+    const accessories = await getRemainingAccessories(cube.accessories).lean();
+
+    const hasAccessories = accessories?.length>0;
+
+    res.status(302).render('cubes/attach',{cube,accessories,hasAccessories});
+});
+
+router.post('/:cubeId/accessories/attach',mustBeAuth,async(req,res)=>{
+    const cubeId = req.params.cubeId;
+    const loggedUserId = req.user._id;
+
+    const cube = await getCubeById(cubeId)
+    ?await getCubeById(cubeId).lean()
+    :false;
+
+    if(!cube){
+        return res.status(404).render('404');
+    }
+    
+    if(loggedUserId != cube.creatorId){
+        return res.redirect('/');
+    }
+    const accessoryId = req.body.accessory;
+    
+    await attachAccessoryToCube(cubeId,accessoryId);
+
+    res.redirect(`/cubes/${cubeId}/details`);
+
+});
+
 
 module.exports = router;
