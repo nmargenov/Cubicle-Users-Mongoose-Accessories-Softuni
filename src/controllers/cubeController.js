@@ -1,5 +1,6 @@
 const { createCube, getCubeById, deleteCubeById, editCubeById } = require('../managers/cubeManager');
 const { mustBeAuth } = require('../middlewares/authMiddleware');
+const generateDifficultyLevelOptionsView = require('../utils/utils');
 
 const router = require('express').Router();
 
@@ -59,7 +60,10 @@ router.get('/:cubeId/delete',mustBeAuth,async (req,res)=>{
         return res.redirect('/');
     }
 
-    res.status(302).render('cubes/delete',{cube})
+    const options = generateDifficultyLevelOptionsView(cube.difficultyLevel);
+
+
+    res.status(302).render('cubes/delete',{cube,options})
 });
 
 router.post('/:cubeId/delete',mustBeAuth,async(req,res)=>{
@@ -100,7 +104,8 @@ router.get('/:cubeId/edit',mustBeAuth,async(req,res)=>{
         return res.redirect('/');
     }
 
-    res.status(302).render('cubes/edit',{cube});
+    const options = generateDifficultyLevelOptionsView(cube.difficultyLevel);
+    res.status(302).render('cubes/edit',{cube,options});
 });
 
 router.post('/:cubeId/edit',mustBeAuth,async(req,res)=>{
@@ -132,7 +137,6 @@ router.post('/:cubeId/edit',mustBeAuth,async(req,res)=>{
     }
 
     const editedCube = await editCubeById(cubeId,name,description,imageUrl,difficultyLevel);
-    console.log(editedCube);
     res.redirect(`/cubes/${editedCube._id}/details`);
 });
 
