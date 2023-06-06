@@ -1,4 +1,4 @@
-const { createCube, getCubeById, deleteCubeById } = require('../managers/cubeManager');
+const { createCube, getCubeById, deleteCubeById, editCubeById } = require('../managers/cubeManager');
 const { mustBeAuth } = require('../middlewares/authMiddleware');
 
 const router = require('express').Router();
@@ -82,7 +82,58 @@ router.post('/:cubeId/delete',mustBeAuth,async(req,res)=>{
     await deleteCubeById(cubeId);
     
     res.redirect('/');
-})
+});
 
+router.get('/:cubeId/edit',mustBeAuth,async(req,res)=>{
+    const cubeId = req.params.cubeId;
+    const loggedUserId = req.user._id;
+
+    const cube = await getCubeById(cubeId)
+    ?await getCubeById(cubeId).lean()
+    :false;
+
+    if(!cube){
+        return res.status(404).render('404');
+    }
+    
+    if(loggedUserId != cube.creatorId){
+        return res.redirect('/');
+    }
+
+    res.status(302).render('cubes/edit',{cube});
+});
+
+router.post('/:cubeId/edit',mustBeAuth,async(req,res)=>{
+    const cubeId = req.params.cubeId;
+    const loggedUserId = req.user._id;
+
+    const name = req.body.name.trim();
+    const description = req.body.description.trim();
+    const imageUrl = req.body.imageUrl.trim();
+    const difficultyLevel = req.body.difficultyLevel;
+
+    if(name == ""
+    ||description == ""
+    ||imageUrl == ""){
+        throw new Error("Empty fields");
+    }
+
+
+    const cube = await getCubeById(cubeId)
+    ?await getCubeById(cubeId).lean()
+    :false;
+
+    if(!cube){
+        return res.status(404).render('404');
+    }
+    
+    if(loggedUserId != cube.creatorId){
+        return res.redirect('/');
+    }
+
+    const editedCube = await editCubeById(cubeId,name,description,imageUrl,difficultyLevel);
+    console.log(editedCube);
+    res.redirect(`/cubes/${editedCube._id}/details`);
+});
 
 module.exports = router;

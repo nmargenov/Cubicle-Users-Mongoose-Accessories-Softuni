@@ -38,4 +38,15 @@ function deleteCubeById(cubeId){
     return Cube.findByIdAndDelete(cubeId);
 }
 
-module.exports = {getAllCubes,createCube,getCubeById,getCubeByIdWithAccessories,deleteCubeById}
+function editCubeById(cubeId,name,description,imageUrl,difficultyLevel){
+    const editedCube = {
+        name,
+        description,
+        imageUrl,
+        difficultyLevel:Number(difficultyLevel)
+    }
+
+    return Cube.findByIdAndUpdate(cubeId,editedCube);
+}
+
+module.exports = {getAllCubes,createCube,getCubeById,getCubeByIdWithAccessories,deleteCubeById,editCubeById}
