@@ -1,6 +1,8 @@
 const bcrypt = require('bcrypt');
 
 const User = require("../models/User");
+const { SECRET } = require('../config/config');
+const { sign } = require('../lib/jwt');
 
 async function register(username,password,rePassword){
     const existingUsername = await User.findOne({username});
@@ -22,7 +24,14 @@ async function register(username,password,rePassword){
 
     const createdUser = await User.create(user);
 
-    return createdUser;
+    const payload = {
+        _id:createdUser._id,
+        username:createdUser.username
+    }
+
+    const token = sign(payload,SECRET,{ expiresIn: '2d'});
+
+    return token;
 }
 
 async function login(username,password){
@@ -38,7 +47,14 @@ async function login(username,password){
         throw new Error("Username or password don't match!");
     }
 
-    return user;
+    const payload = {
+        _id:user._id,
+        username:user.username
+    }
+
+    const token = sign(payload,SECRET,{ expiresIn: '2d'});
+
+    return token;
 }
 
 module.exports = {

@@ -15,8 +15,8 @@ router.post('/login',async(req,res)=>{
         throw new Error('Empty fields');
     }
 
-    const user = await login(username,password);
-    console.log(user);
+    const token = await login(username,password);
+    res.cookie('user',token,{httpOnly:true});
     res.redirect('/');
 });
 
@@ -35,8 +35,8 @@ router.post('/register',async(req,res)=>{
         throw new Error('Empty fields');
     }
 
-    const user = await register(username,password,rePassword);
-    console.log(user);
+    const token = await register(username,password,rePassword);
+    res.cookie('user',token,{httpOnly:true});
     res.redirect('/');
 });
 
