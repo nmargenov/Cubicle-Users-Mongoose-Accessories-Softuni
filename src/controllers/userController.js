@@ -1,5 +1,5 @@
-const { mustBeGuest, mustBeAuth } = require('../config/middlewares/authMiddleware');
 const { register, login } = require('../managers/userManager');
+const { mustBeAuth, mustBeGuest } = require('../middlewares/authMiddleware');
 
 const router = require('express').Router();
 

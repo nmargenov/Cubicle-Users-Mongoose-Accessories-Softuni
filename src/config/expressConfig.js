@@ -1,7 +1,6 @@
 const cookieParser = require('cookie-parser');
 const express = require('express');
-const { auth } = require('./middlewares/authMiddleware');
-
+const { auth } = require('../middlewares/authMiddleware');
 
 function expressConfig(app) {
     app.use(express.static('src'));

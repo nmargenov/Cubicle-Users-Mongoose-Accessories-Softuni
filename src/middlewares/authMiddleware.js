@@ -1,5 +1,5 @@
-const { verify } = require("../../lib/jwt");
-const { SECRET } = require("../config");
+const { verify } = require("../lib/jwt");
+const { SECRET } = require("../config/config");
 
 exports.auth = async (req,res,next)=>{
     const token = req.cookies['user'];
