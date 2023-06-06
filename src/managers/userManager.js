@@ -25,6 +25,23 @@ async function register(username,password,rePassword){
     return createdUser;
 }
 
+async function login(username,password){
+    const user = await User.findOne({username});
+
+    if(!user){
+        throw new Error("Username or password don't match!");
+    }
+
+    const isValidPassword = await bcrypt.compare(password,user?.password);
+
+    if(!isValidPassword){
+        throw new Error("Username or password don't match!");
+    }
+
+    return user;
+}
+
 module.exports = {
-    register
+    register,
+    login
 }
