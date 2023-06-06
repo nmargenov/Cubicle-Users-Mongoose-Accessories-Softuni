@@ -1,11 +1,15 @@
 const Cube = require("../models/Cube");
 
+function getAllCubes(){
+    return Cube.find();
+}
+
 async function createCube(name,description,imageUrl,difficultyLevel,creatorId){
     const cube = {
         name,
         description,
         imageUrl,
-        difficultyLevel,
+        difficultyLevel:Number(difficultyLevel),
         creatorId,
         accessories:[]
     }
@@ -15,4 +19,4 @@ async function createCube(name,description,imageUrl,difficultyLevel,creatorId){
     return newCube;
 }
 
-module.exports = {createCube}
+module.exports = {getAllCubes,createCube}
