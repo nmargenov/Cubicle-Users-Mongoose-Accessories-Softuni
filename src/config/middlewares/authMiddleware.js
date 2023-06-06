@@ -21,3 +21,17 @@ exports.auth = async (req,res,next)=>{
         next();
     }
 };
+
+exports.mustBeAuth = (req,res,next)=>{
+    if(!req.user){
+        return res.redirect('/users/login');
+    }
+    next();
+};
+
+exports.mustBeGuest = (req,res,next)=>{
+    if(req.user){
+        return res.redirect('/');
+    }
+    next();
+};
