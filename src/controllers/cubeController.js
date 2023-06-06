@@ -1,4 +1,4 @@
-const { createCube, getCubeById, deleteCubeById, editCubeById } = require('../managers/cubeManager');
+const { createCube, getCubeById, deleteCubeById, editCubeById, getCubeByIdWithAccessories } = require('../managers/cubeManager');
 const { mustBeAuth } = require('../middlewares/authMiddleware');
 const generateDifficultyLevelOptionsView = require('../utils/utils');
 
@@ -30,8 +30,8 @@ router.post('/addCube',mustBeAuth,async(req,res)=>{
 router.get('/:cubeId/details',async(req,res)=>{
     const loggedUserId = req.user?._id;
     const cubeId = req.params.cubeId;
-    const cube = await getCubeById(cubeId)
-    ? await getCubeById(cubeId).lean()
+    const cube = await getCubeByIdWithAccessories(cubeId)
+    ? await getCubeByIdWithAccessories(cubeId).lean()
     : false;
 
     if(!cube){
