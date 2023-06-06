@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const Cube = require("../models/Cube");
 
 function getAllCubes(){
@@ -19,4 +20,18 @@ async function createCube(name,description,imageUrl,difficultyLevel,creatorId){
     return newCube;
 }
 
-module.exports = {getAllCubes,createCube}
+function getCubeById(cubeId){
+    if(!mongoose.Types.ObjectId.isValid(cubeId)){
+        return false;
+    }
+    return Cube.findById(cubeId);
+}
+
+function getCubeByIdWithAccessories(cubeId){
+    if(!mongoose.Types.ObjectId.isValid(cubeId)){
+        return false;
+    }
+    return Cube.findById(cubeId).populate('accessories');
+}
+
+module.exports = {getAllCubes,createCube,getCubeById,getCubeByIdWithAccessories}

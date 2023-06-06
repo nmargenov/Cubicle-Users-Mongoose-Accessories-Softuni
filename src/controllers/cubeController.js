@@ -1,4 +1,4 @@
-const { createCube } = require('../managers/cubeManager');
+const { createCube, getCubeById } = require('../managers/cubeManager');
 const { mustBeAuth } = require('../middlewares/authMiddleware');
 
 const router = require('express').Router();
@@ -27,9 +27,15 @@ router.post('/addCube',mustBeAuth,async(req,res)=>{
 });
 
 router.get('/:cubeId/details',async(req,res)=>{
-    const cube = null;
+    const cubeId = req.params.cubeId;
+    const cube = await getCubeById(cubeId)
+    ? await getCubeById(cubeId).lean()
+    : false;
+    if(!cube){
+       return res.status(404).render('404');
+    }
 
-    res.status(302).render('cubes/details',cube);
+    res.status(302).render('cubes/details',{cube});
 });
 
 
