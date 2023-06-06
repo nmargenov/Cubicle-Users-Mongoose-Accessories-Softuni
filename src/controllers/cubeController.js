@@ -26,5 +26,11 @@ router.post('/addCube',mustBeAuth,async(req,res)=>{
     res.redirect(`/cubes/${cube._id}/details`);
 });
 
+router.get('/:cubeId/details',async(req,res)=>{
+    const cube = null;
+
+    res.status(302).render('cubes/details',cube);
+});
+
 
 module.exports = router;
